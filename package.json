@@ -1,0 +1,39 @@
+{
+  "name": "zn-plugin-nivo-charts",
+  "version": "0.0.1",
+  "main": "index.html",
+  "scripts": {
+    "start": "parcel serve src/index.html --https",
+    "build": "parcel build src/index.html",
+    "stage": "now && now rm zn-plugin-nivo-charts -ys",
+    "prod": "now --prod && now rm zn-plugin-nivo-charts -ys"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/tehpsalmist/zn-plugin-nivo-charts.git"
+  },
+  "keywords": [
+    "parcel",
+    "react",
+    "tailwindcss",
+    "template"
+  ],
+  "author": "Ben Steward <bstewardcodes@gmail.com> (https://tehpsalmist.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tehpsalmist/zn-plugin-nivo-charts/issues"
+  },
+  "homepage": "https://github.com/tehpsalmist/zn-plugin-nivo-charts#readme",
+  "devDependencies": {
+    "@fullhuman/postcss-purgecss": "latest",
+    "parcel": "^1.12.3",
+    "parcel-plugin-copy-file": "github:tehpsalmist/parcel-plugin-copy-file",
+    "tailwindcss": "latest"
+  },
+  "dependencies": {
+    "@nivo/pie": "^0.59.1",
+    "@zenginehq/post-rpc-client": "^0.8.1",
+    "react": "latest",
+    "react-dom": "latest"
+  }
+}

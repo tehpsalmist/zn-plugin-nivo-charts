@@ -1,0 +1,9 @@
+{
+  "icon": "icon-chart-bar",
+  "views": [
+    {
+      "type": "fullPage",
+      "src": "/index.html"
+    }
+  ]
+}
