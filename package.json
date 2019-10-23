@@ -4,9 +4,7 @@
   "main": "index.html",
   "scripts": {
     "start": "parcel serve src/index.html --https",
-    "build": "parcel build src/index.html",
-    "stage": "now && now rm zn-plugin-nivo-charts -ys",
-    "prod": "now --prod && now rm zn-plugin-nivo-charts -ys"
+    "build": "parcel build src/index.html && cd dist && rm ../dist.zip; zip -r ../dist.zip ."
   },
   "repository": {
     "type": "git",

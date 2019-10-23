@@ -13,6 +13,14 @@ export const ZengineProvider = props => {
   useEffect(() => {
     client.call({ method: 'context' })
       .then(data => {
+        data.fields = data.workspace.forms.reduce((map, form) => ({
+          ...map,
+          ...form.fields.reduce((fields, field) => ({
+            ...fields,
+            [`field${field.id}`]: field
+          }), {})
+        }), {})
+
         setZContext(data)
       })
       .catch((err) => {
@@ -24,3 +32,11 @@ export const ZengineProvider = props => {
     {props.children}
   </ZengineContext.Provider>
 }
+
+export const getRecords = form => client.call({
+  method: 'znHttp',
+  args: {
+    options: { apiVersion: 'v1' },
+    request: { method: 'get', url: `/forms/${form}/records` }
+  }
+}).then(data => data.data.data)

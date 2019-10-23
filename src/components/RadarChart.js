@@ -1,53 +1,111 @@
 import React, { useState, useEffect } from 'react'
 import { ResponsiveRadar } from '@nivo/radar'
-import { client } from '../zengine'
+import { getRecords } from '../zengine'
+import { async } from 'q'
 
 export const RadarChart = ({ context }) => {
+  if (context.loading) return 'Loading...'
+
+  const [error, setError] = useState('')
+
+  if (error) return error
+
   const [data, setData] = useState([
     {
-      "taste": "fruity",
-      "chardonay": 116,
-      "carmenere": 84,
-      "syrah": 71
+      "subject": "Math",
+      "0 unexcused absences": 96,
+      "1-2 unexcused absences": 84,
+      "3+ unexcused absences": 71
     },
     {
-      "taste": "bitter",
-      "chardonay": 62,
-      "carmenere": 62,
-      "syrah": 96
+      "subject": "English",
+      "0 unexcused absences": 62,
+      "1-2 unexcused absences": 62,
+      "3+ unexcused absences": 96
     },
     {
-      "taste": "heavy",
-      "chardonay": 82,
-      "carmenere": 68,
-      "syrah": 20
+      "subject": "Science",
+      "0 unexcused absences": 82,
+      "1-2 unexcused absences": 68,
+      "3+ unexcused absences": 20
     },
     {
-      "taste": "strong",
-      "chardonay": 33,
-      "carmenere": 32,
-      "syrah": 71
+      "subject": "History",
+      "0 unexcused absences": 33,
+      "1-2 unexcused absences": 32,
+      "3+ unexcused absences": 71
     },
     {
-      "taste": "sunny",
-      "chardonay": 108,
-      "carmenere": 96,
-      "syrah": 116
+      "subject": "PE",
+      "0 unexcused absences": 98,
+      "1-2 unexcused absences": 96,
+      "3+ unexcused absences": 96
     }
   ])
 
   useEffect(() => {
-    console.log(context.workspace.forms)
-  })
+    Promise.all([
+      getRecords(11981),
+      getRecords(11998),
+      getRecords(11999),
+    ])
+      .then(async ([studentResponse, reportCards, absences]) => {
+        console.log(studentResponse)
+        console.log(reportCards)
+        console.log(absences)
+        console.log(context.fields)
 
-  return <div className='h-1 flex-grow' onClick={e => resetData()}>
+        const students = studentResponse.reduce((studentlist, student) => ({
+          ...studentlist,
+          [student.id]: { absences: 0 }
+        }), {})
+
+        console.log(students)
+
+        absences.forEach(absence => {
+          if (!absence.field83459) {
+            students[absence.field83461.id].absences += 1
+          }
+        });
+
+        reportCards.forEach(rc => {
+          students[rc.field83457.id] = {
+            ...students[rc.field83457.id],
+            [context.fields.field83452.label]: rc.field83452,
+            [context.fields.field83453.label]: rc.field83453,
+            [context.fields.field83454.label]: rc.field83454,
+            [context.fields.field83455.label]: rc.field83455,
+            [context.fields.field83456.label]: rc.field83456
+          }
+        })
+
+        const studentGroups = Object.keys(students).map(key => students[key]).reduce((groups, student) => {
+          if (student.absences > 2) groups['3+ unexcused absences'].push(student)
+          else if (student.absences > 0) groups['1-2 unexcused absences'].push(student)
+          else groups['0 unexcused absences'].push(student)
+
+          return groups
+        }, { '0 unexcused absences': [], '1-2 unexcused absences': [], '3+ unexcused absences': [] })
+
+        setData(['Math', 'English', 'Science', 'History', 'PE'].map(subject => ({
+          subject,
+          ...Object.keys(studentGroups).reduce((props, key) => ({
+            ...props,
+            [key]: (studentGroups[key].reduce((total, student) => Number(student[subject]) + total, 0) / studentGroups[key].length).toFixed(2)
+          }), {})
+        })))
+      })
+      .catch(err => setError('Error Fetching Records'))
+  }, [])
+
+  return <div className='h-1 flex-grow'>
     <ResponsiveRadar
       data={data}
-      keys={['chardonay', 'carmenere', 'syrah']}
-      indexBy="taste"
+      keys={['0 unexcused absences', '1-2 unexcused absences', '3+ unexcused absences']}
+      indexBy="subject"
       maxValue="auto"
       margin={{ top: 70, right: 80, bottom: 40, left: 80 }}
-      curve="linearClosed"
+      curve="cardinalClosed"
       borderWidth={2}
       borderColor={{ from: 'color' }}
       gridLevels={5}
@@ -61,7 +119,7 @@ export const RadarChart = ({ context }) => {
       enableDotLabel={true}
       dotLabel="value"
       dotLabelYOffset={-12}
-      colors={{ scheme: 'nivo' }}
+      colors={{ scheme: 'category10' }}
       fillOpacity={0.25}
       blendMode="multiply"
       animate={true}

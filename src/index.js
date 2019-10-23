@@ -1,3 +1,4 @@
+import '@babel/polyfill'
 import React, { useContext, useState } from 'react'
 import { render } from 'react-dom'
 import { ZengineContext, ZengineProvider } from './zengine'
