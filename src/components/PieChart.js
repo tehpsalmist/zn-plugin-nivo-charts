@@ -7,7 +7,7 @@ export const PieChart = ({ data }) => {
 
   if (loading) return <h2 className='text-3xl text-center'>Loading...</h2>
 
-  const data = [
+  data = data || [
     {
       "id": "go",
       "label": "go",
@@ -40,7 +40,7 @@ export const PieChart = ({ data }) => {
     }
   ]
 
-  return <div className='h-screen'>
+  return <div className='h-1 flex-grow' onClick={e => console.log('outer')}>
     <ResponsivePie
       data={data}
       margin={{ top: 40, right: 80, bottom: 80, left: 80 }}

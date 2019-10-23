@@ -20,5 +20,7 @@ export const ZengineProvider = props => {
       })
   }, [])
 
-  return <ZengineContext.Provider value={{ ...props, ...zContext }}>{props.children}</ZengineContext.Provider>
+  return <ZengineContext.Provider value={{ ...props, ...zContext }}>
+    {props.children}
+  </ZengineContext.Provider>
 }

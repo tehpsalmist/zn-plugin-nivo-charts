@@ -31,7 +31,9 @@
     "tailwindcss": "latest"
   },
   "dependencies": {
+    "@nivo/bar": "^0.59.2",
     "@nivo/pie": "^0.59.1",
+    "@nivo/radar": "^0.59.1",
     "@zenginehq/post-rpc-client": "^0.8.1",
     "react": "latest",
     "react-dom": "latest"
