@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { ResponsiveBar } from '@nivo/bar'
 import { getRecords, saveRecords } from '../zengine'
+import { pSBC } from '../utilities'
 
 export const BarChart = ({ context }) => {
   if (context.loading) return 'Loading...'
@@ -63,6 +64,7 @@ export const BarChart = ({ context }) => {
   ])
 
   const [vertical, setVertical] = useState(true)
+  const [{ selectedColor = '#ffffff', selectedId = '' }, setSelection] = useState({})
 
   console.log(context)
   const folders = (context.workspace.forms.find(f => f.id === 11978) || { folders: [] })
@@ -132,19 +134,10 @@ export const BarChart = ({ context }) => {
       colors={{ scheme: 'nivo' }}
       defs={[
         {
-          id: 'dots',
-          type: 'patternDots',
-          background: 'inherit',
-          color: '#38bcb2',
-          size: 4,
-          padding: 1,
-          stagger: true
-        },
-        {
           id: 'lines',
           type: 'patternLines',
           background: 'inherit',
-          color: '#eed312',
+          color: pSBC(-0.2, selectedColor),
           rotation: -45,
           lineWidth: 6,
           spacing: 10
@@ -153,13 +146,7 @@ export const BarChart = ({ context }) => {
       fill={[
         {
           match: {
-            id: 'Awarded'
-          },
-          id: 'dots'
-        },
-        {
-          match: {
-            id: 'Draft'
+            id: selectedId
           },
           id: 'lines'
         }
@@ -196,6 +183,18 @@ export const BarChart = ({ context }) => {
           }
         }
       }}
+      tooltip={info => {
+        return <div className='flex flex-col items-center'>
+          <h5 className='w-full text-center mb-4'>
+            <span className='font-semibold'>{info.indexValue}:</span>
+            {' '}
+            <em>{info.id}</em>
+            {' '}
+            ({info.value})
+          </h5>
+          {info.data[`${info.id}Apps`].map(name => <p className='text-sm' key={name}>{name}</p>)}
+        </div>
+      }}
       legends={[
         {
           dataFrom: 'keys',
@@ -210,6 +209,8 @@ export const BarChart = ({ context }) => {
           itemDirection: 'left-to-right',
           itemOpacity: 0.85,
           symbolSize: 20,
+          onMouseEnter: ({ id, color }) => setSelection({ selectedColor: color, selectedId: id }),
+          onMouseLeave: () => setSelection({}),
           effects: [
             {
               on: 'hover',
@@ -223,7 +224,6 @@ export const BarChart = ({ context }) => {
       animate={true}
       motionStiffness={90}
       motionDamping={15}
-      onClick={thing => console.log(thing)}
     />
   </div>
 }
