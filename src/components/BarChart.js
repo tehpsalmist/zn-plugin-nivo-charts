@@ -189,7 +189,7 @@ export const BarChart = ({ context }) => {
             {' '}
             ({info.value})
           </h5>
-          {info.data[`${info.id}Apps`].map(name => <p className='text-sm' key={name}>{name}</p>)}
+          {(info.data[`${info.id}Apps`] || []).map(name => <p className='text-sm' key={name}>{name}</p>)}
         </div>
       }}
       legends={[
