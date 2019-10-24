@@ -66,11 +66,8 @@ export const BarChart = ({ context }) => {
   const [vertical, setVertical] = useState(true)
   const [{ selectedColor = '#ffffff', selectedId = '' }, setSelection] = useState({})
 
-  console.log(context)
   const folders = (context.workspace.forms.find(f => f.id === 11978) || { folders: [] })
     .folders.reduce((map, f) => ({ ...map, [f.id]: f.name }), {})
-
-  console.log(folders)
 
   useEffect(() => {
     getRecords(11978)
