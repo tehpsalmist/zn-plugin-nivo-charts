@@ -1,10 +1,9 @@
-import '@babel/polyfill'
 import React, { useContext, useState } from 'react'
 import { render } from 'react-dom'
 import { ZengineContext, ZengineProvider } from './zengine'
-import { PieChart, BarChart, RadarChart } from './components'
+import { /*GeoChart,*/ BarChart, RadarChart } from './components'
 
-const buttonClass = 'px-2 py-1 mx-1 bg-green-600 text-white rounded-lg'
+const buttonClass = 'px-2 py-1 mx-1 bg-green-500 shadow-md text-white rounded-lg hover:bg-green-600 focus:outline-none'
 
 export const App = props => {
   const context = useContext(ZengineContext)
@@ -15,11 +14,11 @@ export const App = props => {
   let chart
 
   switch (selection) {
-    case 'pie':
-      chart = <PieChart />
-      break
+    // case 'geo':
+    //   chart = <GeoChart context={context} />
+    //   break
     case 'bar':
-      chart = <BarChart />
+      chart = <BarChart context={context} />
       break
     case 'radar':
       chart = <RadarChart context={context} />
@@ -31,10 +30,26 @@ export const App = props => {
 
   return <main className='min-h-screen w-full flex flex-col'>
     <div className='h-16 flex justify-center items-center'>
-      <button className={buttonClass} onClick={e => setSelection('pie')}>Pie Chart</button>
-      <button className={buttonClass} onClick={e => setSelection('bar')}>Bar Chart</button>
-      <button className={buttonClass} onClick={e => setSelection('radar')}>Radar Chart</button>
-      <button className={buttonClass} onClick={e => setSelection('')}>Clear Chart</button>
+      {/* <button
+        className={`${buttonClass} ${selection === 'geo' ? 'bg-green-700' : ''}`}
+        onClick={e => setSelection('geo')}>
+        Geo Chart
+      </button> */}
+      <button
+        className={`${buttonClass} ${selection === 'bar' ? 'bg-green-700' : ''}`}
+        onClick={e => setSelection('bar')}>
+        Bar Chart
+      </button>
+      <button
+        className={`${buttonClass} ${selection === 'radar' ? 'bg-green-700' : ''}`}
+        onClick={e => setSelection('radar')}>
+        Radar Chart
+      </button>
+      <button
+        className={`${buttonClass} ${selection === '' ? 'bg-green-700' : ''}`}
+        onClick={e => setSelection('')}>
+        No Chart
+      </button>
     </div>
     {chart}
   </main>

@@ -1,3 +1,3 @@
-export * from './PieChart'
+// export * from './GeoChart'
 export * from './BarChart'
 export * from './RadarChart'

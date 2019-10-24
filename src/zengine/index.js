@@ -37,6 +37,14 @@ export const getRecords = form => client.call({
   method: 'znHttp',
   args: {
     options: { apiVersion: 'v1' },
-    request: { method: 'get', url: `/forms/${form}/records` }
+    request: { method: 'get', url: `/forms/${form}/records?limit=100` }
   }
 }).then(data => data.data.data)
+
+export const saveRecords = (form, data) => client.call({
+  method: 'znHttp',
+  args: {
+    options: { apiVersion: 'v1' },
+    request: { method: 'post', url: `/forms/${form}/records`, data }
+  }
+})

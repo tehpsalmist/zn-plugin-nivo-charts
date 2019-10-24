@@ -1,120 +1,132 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { ResponsiveBar } from '@nivo/bar'
+import { getRecords, saveRecords } from '../zengine'
 
-export const BarChart = ({ data }) => {
-  data = data || [
+export const BarChart = ({ context }) => {
+  if (context.loading) return 'Loading...'
+
+  const [error, setError] = useState('')
+
+  if (error) return error
+
+  const [data, setData] = useState([
     {
-      "country": "AD",
-      "hot dog": 111,
-      "hot dogColor": "hsl(20, 70%, 50%)",
-      "burger": 179,
-      "burgerColor": "hsl(83, 70%, 50%)",
-      "sandwich": 172,
-      "sandwichColor": "hsl(182, 70%, 50%)",
-      "kebab": 39,
-      "kebabColor": "hsl(199, 70%, 50%)",
-      "fries": 18,
-      "friesColor": "hsl(281, 70%, 50%)",
-      "donut": 116,
-      "donutColor": "hsl(220, 70%, 50%)"
+      year: '2016',
+      'Submitted': 111,
+      'In Review': 179,
+      'Draft': 172,
+      'Ineligible': 39,
+      'Awarded': 18,
+      'Invite to Apply': 116,
+      'Uncategorized': 5
     },
     {
-      "country": "AE",
-      "hot dog": 158,
-      "hot dogColor": "hsl(83, 70%, 50%)",
-      "burger": 143,
-      "burgerColor": "hsl(225, 70%, 50%)",
-      "sandwich": 8,
-      "sandwichColor": "hsl(116, 70%, 50%)",
-      "kebab": 117,
-      "kebabColor": "hsl(323, 70%, 50%)",
-      "fries": 74,
-      "friesColor": "hsl(331, 70%, 50%)",
-      "donut": 72,
-      "donutColor": "hsl(227, 70%, 50%)"
+      year: '2017',
+      'Submitted': 158,
+      'In Review': 143,
+      'Draft': 8,
+      'Ineligible': 117,
+      'Awarded': 74,
+      'Invite to Apply': 72,
+      'Uncategorized': 5
     },
     {
-      "country": "AF",
-      "hot dog": 5,
-      "hot dogColor": "hsl(336, 70%, 50%)",
-      "burger": 79,
-      "burgerColor": "hsl(263, 70%, 50%)",
-      "sandwich": 137,
-      "sandwichColor": "hsl(213, 70%, 50%)",
-      "kebab": 57,
-      "kebabColor": "hsl(187, 70%, 50%)",
-      "fries": 6,
-      "friesColor": "hsl(155, 70%, 50%)",
-      "donut": 197,
-      "donutColor": "hsl(285, 70%, 50%)"
+      year: '2018',
+      'Submitted': 5,
+      'In Review': 79,
+      'Draft': 137,
+      'Ineligible': 57,
+      'Awarded': 6,
+      'Invite to Apply': 197,
+      'Uncategorized': 5
     },
     {
-      "country": "AG",
-      "hot dog": 46,
-      "hot dogColor": "hsl(4, 70%, 50%)",
-      "burger": 135,
-      "burgerColor": "hsl(91, 70%, 50%)",
-      "sandwich": 20,
-      "sandwichColor": "hsl(336, 70%, 50%)",
-      "kebab": 194,
-      "kebabColor": "hsl(71, 70%, 50%)",
-      "fries": 129,
-      "friesColor": "hsl(133, 70%, 50%)",
-      "donut": 97,
-      "donutColor": "hsl(64, 70%, 50%)"
+      year: '2019',
+      'Submitted': 46,
+      'In Review': 135,
+      'Draft': 20,
+      'Ineligible': 194,
+      'Awarded': 129,
+      'Invite to Apply': 97,
+      'Uncategorized': 5
     },
     {
-      "country": "AI",
-      "hot dog": 97,
-      "hot dogColor": "hsl(172, 70%, 50%)",
-      "burger": 121,
-      "burgerColor": "hsl(323, 70%, 50%)",
-      "sandwich": 182,
-      "sandwichColor": "hsl(163, 70%, 50%)",
-      "kebab": 74,
-      "kebabColor": "hsl(354, 70%, 50%)",
-      "fries": 20,
-      "friesColor": "hsl(222, 70%, 50%)",
-      "donut": 100,
-      "donutColor": "hsl(17, 70%, 50%)"
-    },
-    {
-      "country": "AL",
-      "hot dog": 200,
-      "hot dogColor": "hsl(265, 70%, 50%)",
-      "burger": 17,
-      "burgerColor": "hsl(249, 70%, 50%)",
-      "sandwich": 50,
-      "sandwichColor": "hsl(191, 70%, 50%)",
-      "kebab": 118,
-      "kebabColor": "hsl(194, 70%, 50%)",
-      "fries": 121,
-      "friesColor": "hsl(163, 70%, 50%)",
-      "donut": 24,
-      "donutColor": "hsl(356, 70%, 50%)"
-    },
-    {
-      "country": "AM",
-      "hot dog": 180,
-      "hot dogColor": "hsl(196, 70%, 50%)",
-      "burger": 14,
-      "burgerColor": "hsl(134, 70%, 50%)",
-      "sandwich": 90,
-      "sandwichColor": "hsl(218, 70%, 50%)",
-      "kebab": 198,
-      "kebabColor": "hsl(272, 70%, 50%)",
-      "fries": 39,
-      "friesColor": "hsl(89, 70%, 50%)",
-      "donut": 74,
-      "donutColor": "hsl(36, 70%, 50%)"
+      year: '2020',
+      'Submitted': 97,
+      'In Review': 121,
+      'Draft': 182,
+      'Ineligible': 74,
+      'Awarded': 20,
+      'Invite to Apply': 100,
+      'Uncategorized': 5
     }
-  ]
+  ])
 
-  return <div className='h-1 flex-grow' onClick={e => resetData()}>
+  const [vertical, setVertical] = useState(true)
+
+  console.log(context)
+  const folders = (context.workspace.forms.find(f => f.id === 11978) || { folders: [] })
+    .folders.reduce((map, f) => ({ ...map, [f.id]: f.name }), {})
+
+  console.log(folders)
+
+  useEffect(() => {
+    getRecords(11978)
+      .then(applications => {
+        if (error) setError('')
+
+        // console.log(applications)
+
+        // const newApps = applications.map(({ id }) => ({
+        //   id,
+        //   'folder.id': Number(Object.keys(folders)[Math.ceil(Math.random() * 6)])
+        // }))
+
+        // saveRecords(11978, newApps)
+        //   .then(data => console.log('saved:', data))
+        //   .catch(err => console.error('error:', err))
+
+        const map = applications.reduce((m, a) => ({
+          ...m,
+          [a.field83465]: m[a.field83465] ? m[a.field83465].concat([a]) : [a]
+        }), {})
+
+        const newData = Object.keys(map).map(year => {
+          const dataObject = { year }
+
+          map[year].forEach(app => {
+            const folderName = folders[app.folder.id] || 'Uncategorized'
+
+            if (!dataObject[folderName]) {
+              dataObject[folderName] = 1
+              dataObject[`${folderName}Apps`] = [app.name]
+            } else {
+              dataObject[folderName]++
+              dataObject[`${folderName}Apps`].push(app.name)
+            }
+          })
+
+          return dataObject
+        })
+
+        setData(newData)
+      })
+      .catch(err => setError('Error Fetching Records'))
+  }, [])
+
+  return <div className='h-1 flex-grow relative'>
+    <button
+      type='button'
+      className='absolute top-0 right-0 p-2 mr-2 rounded-lg text-white bg-blue-500 shadow-md hover:bg-blue-600 focus:bg-blue-700 z-50 focus:outline-none'
+      onClick={e => setVertical(!vertical)}
+    >
+      {vertical ? 'Horizontal' : 'Vertical'}
+    </button>
     <ResponsiveBar
       data={data}
-      keys={['hot dog', 'burger', 'sandwich', 'kebab', 'fries', 'donut']}
-      indexBy="country"
+      keys={['Submitted', 'In Review', 'Draft', 'Ineligible', 'Awarded', 'Invite to Apply', 'Uncategorized']}
+      indexBy='year'
+      layout={vertical ? 'vertical' : 'horizontal'}
       margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
       padding={0.3}
       colors={{ scheme: 'nivo' }}
@@ -141,13 +153,13 @@ export const BarChart = ({ data }) => {
       fill={[
         {
           match: {
-            id: 'fries'
+            id: 'Awarded'
           },
           id: 'dots'
         },
         {
           match: {
-            id: 'sandwich'
+            id: 'Draft'
           },
           id: 'lines'
         }
@@ -159,7 +171,7 @@ export const BarChart = ({ data }) => {
         tickSize: 5,
         tickPadding: 5,
         tickRotation: 0,
-        legend: 'country',
+        legend: vertical ? 'Year' : 'Applications',
         legendPosition: 'middle',
         legendOffset: 32
       }}
@@ -167,13 +179,23 @@ export const BarChart = ({ data }) => {
         tickSize: 5,
         tickPadding: 5,
         tickRotation: 0,
-        legend: 'food',
+        legend: vertical ? 'Applications' : 'Year',
         legendPosition: 'middle',
-        legendOffset: -40
+        legendOffset: -45
       }}
       labelSkipWidth={12}
       labelSkipHeight={12}
       labelTextColor={{ from: 'color', modifiers: [['darker', 1.6]] }}
+      theme={{
+        axis: {
+          legend: {
+            text: {
+              fontSize: 24,
+              fill: '#888888'
+            }
+          }
+        }
+      }}
       legends={[
         {
           dataFrom: 'keys',

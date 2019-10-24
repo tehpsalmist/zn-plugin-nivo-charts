@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { ResponsiveRadar } from '@nivo/radar'
 import { getRecords } from '../zengine'
-import { async } from 'q'
 
 export const RadarChart = ({ context }) => {
   if (context.loading) return 'Loading...'
@@ -43,24 +42,30 @@ export const RadarChart = ({ context }) => {
     }
   ])
 
+  const [layerColor, setLayerColor] = useState('')
+  const [displayKey, setDisplayKey] = useState('')
+  const [refreshStamp, setRefreshStamp] = useState((Math.random() * 100).toFixed(2))
+
+  const filterDataByLayer = layer => {
+    setDisplayKey(displayKey === layer.id ? '' : layer.id)
+    setLayerColor(layer.color === layerColor ? '' : layer.color)
+  }
+
+  const filterByKey = key => item => !key || item === key
+
   useEffect(() => {
     Promise.all([
       getRecords(11981),
       getRecords(11998),
       getRecords(11999),
     ])
-      .then(async ([studentResponse, reportCards, absences]) => {
-        console.log(studentResponse)
-        console.log(reportCards)
-        console.log(absences)
-        console.log(context.fields)
+      .then(([studentResponse, reportCards, absences]) => {
+        if (error) setError('')
 
         const students = studentResponse.reduce((studentlist, student) => ({
           ...studentlist,
           [student.id]: { absences: 0 }
         }), {})
-
-        console.log(students)
 
         absences.forEach(absence => {
           if (!absence.field83459) {
@@ -96,14 +101,22 @@ export const RadarChart = ({ context }) => {
         })))
       })
       .catch(err => setError('Error Fetching Records'))
-  }, [])
+  }, [displayKey, refreshStamp])
 
-  return <div className='h-1 flex-grow'>
+  return <div className='h-1 flex-grow relative'>
+    <button
+      type='button'
+      className='absolute top-0 right-0 p-2 mr-2 rounded-lg text-white bg-blue-500 shadow-md hover:bg-blue-600 focus:bg-blue-700 z-50 focus:outline-none'
+      onClick={e => setRefreshStamp((Math.random() * 100).toFixed(2))}
+    >
+      Refresh
+    </button>
     <ResponsiveRadar
+      onClick={e => e.stopPropagation()}
       data={data}
-      keys={['0 unexcused absences', '1-2 unexcused absences', '3+ unexcused absences']}
+      keys={['0 unexcused absences', '1-2 unexcused absences', '3+ unexcused absences'].filter(filterByKey(displayKey))}
       indexBy="subject"
-      maxValue="auto"
+      maxValue={100}
       margin={{ top: 70, right: 80, bottom: 40, left: 80 }}
       curve="cardinalClosed"
       borderWidth={2}
@@ -119,7 +132,7 @@ export const RadarChart = ({ context }) => {
       enableDotLabel={true}
       dotLabel="value"
       dotLabelYOffset={-12}
-      colors={{ scheme: 'category10' }}
+      colors={layerColor || { scheme: 'category10' }}
       fillOpacity={0.25}
       blendMode="multiply"
       animate={true}
@@ -144,7 +157,8 @@ export const RadarChart = ({ context }) => {
                 itemTextColor: '#000'
               }
             }
-          ]
+          ],
+          onClick: layer => filterDataByLayer(layer)
         }
       ]}
     />
