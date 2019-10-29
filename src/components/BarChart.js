@@ -4,11 +4,7 @@ import { getRecords, saveRecords } from '../zengine'
 import { pSBC } from '../utilities'
 
 export const BarChart = ({ context }) => {
-  if (context.loading) return 'Loading...'
-
   const [error, setError] = useState('')
-
-  if (error) return error
 
   const [data, setData] = useState([
     {
@@ -112,6 +108,10 @@ export const BarChart = ({ context }) => {
       })
       .catch(err => setError('Error Fetching Records'))
   }, [])
+
+  if (context.loading) return 'Loading...'
+
+  if (error) return error
 
   return <div className='h-1 flex-grow relative'>
     <button

@@ -3,11 +3,7 @@ import { ResponsiveRadar } from '@nivo/radar'
 import { getRecords } from '../zengine'
 
 export const RadarChart = ({ context }) => {
-  if (context.loading) return 'Loading...'
-
   const [error, setError] = useState('')
-
-  if (error) return error
 
   const [data, setData] = useState([
     {
@@ -102,6 +98,10 @@ export const RadarChart = ({ context }) => {
       })
       .catch(err => setError('Error Fetching Records'))
   }, [displayKey, refreshStamp])
+
+  if (context.loading) return 'Loading...'
+
+  if (error) return error
 
   return <div className='h-1 flex-grow relative'>
     <button
