@@ -24,7 +24,7 @@
   "homepage": "https://github.com/tehpsalmist/zn-plugin-nivo-charts#readme",
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "latest",
-    "parcel": "^1.12.3",
+    "parcel": "^2.8.2",
     "parcel-plugin-copy-file": "github:tehpsalmist/parcel-plugin-copy-file",
     "tailwindcss": "latest"
   },
